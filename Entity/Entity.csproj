@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+    <PackageReference Include="Telegram.Bot" Version="15.5.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\RepositoryCore\AuthSolution\AuthModel\AuthModel.csproj" />
+    <ProjectReference Include="..\..\..\RepositoryCore\AuthSolution\MongoAuthService\MongoAuthService.csproj" />
+    <ProjectReference Include="..\..\..\RepositoryCore\Mongodb\MongoRepository\MongoRepositorys.csproj" />
+  </ItemGroup>
+
+</Project>
