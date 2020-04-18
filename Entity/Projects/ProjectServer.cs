@@ -14,6 +14,9 @@ namespace Entity.Projects
         public string Id { get; set; }
         public string ServerIp { get; set; }
         public string Port { get; set;}
+        [BsonIgnoreIfDefault]
+        [BsonDefaultValue(false)]
+        public bool IsDefault { get; set; }
 
     }
     

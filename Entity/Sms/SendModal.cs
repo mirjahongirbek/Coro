@@ -1,4 +1,5 @@
-﻿using MongoDB.Bson.Serialization.Attributes;
+﻿using Entity.Projects;
+using MongoDB.Bson.Serialization.Attributes;
 using Newtonsoft.Json;
 using System.Collections.Generic;
 
@@ -7,7 +8,7 @@ namespace Entity.Sms
     public class SendModal
     {
         public List<Message> Messages { get; set; }
-        public static SendModal Create(Partner partner)
+        public static SendModal Create(Project partner)
         {
             var result = new SendModal();
             result.Messages = new List<Message>();
@@ -33,8 +34,9 @@ namespace Entity.Sms
         public string Token { get; set; } = null;
         public string UserName { get; set; }
         public string Password { get; set; }
-        public void BeforeConfig(Partner partner)
+        public void BeforeConfig(ProjectServices partner)
         {
+            if(partner== null) { return; }
             UserName = partner.UserName;
             Password = partner.Password;
         }

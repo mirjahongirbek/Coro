@@ -14,7 +14,8 @@ namespace Entity.Projects
         public string Name { get; set; }
         public List<ProjectServer> ProjectServers { get; set; }
         public string Password { get; set; }
-        [BsonIgnoreIfDefault(true)]
+        [BsonIgnoreIfDefault()]
+        [BsonDefaultValue(true)]
         public bool IsActive { get; set; } = true;
         public string UserName { get; set; }
         public Entity.Enum.Services Services { get; set; }

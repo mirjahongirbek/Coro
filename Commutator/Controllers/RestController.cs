@@ -6,6 +6,9 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using System.Linq;
+using Service.Interfaces.Proxy;
+using Microsoft.Extensions.Primitives;
+using Commutator.Models;
 
 namespace Commutator.Controllers
 {
@@ -14,6 +17,7 @@ namespace Commutator.Controllers
     public class RestController : ControllerBase
     {
         IServiceProvider _provider;
+
         public RestController(IServiceProvider provider)
         {
             _provider = provider;
@@ -23,6 +27,7 @@ namespace Commutator.Controllers
         [HttpPost]
         public Task<string> FromRequest([FromBody]RestViewModal modal)
         {
+
             var projectName = Request.Headers.FirstOrDefault(m => m.Key.ToLower() == "coroname").Value;
             if (string.IsNullOrEmpty(projectName))
             {
@@ -32,11 +37,15 @@ namespace Commutator.Controllers
         }
         private string SendUnuthorize(IServiceProvider provider, RestViewModal modal)
         {
-            
+            var packet = provider.GetService<IPacketsService>();
+            var dict = Request.Headers.ToDict();
+            packet.Request(modal, dict);
         }
         private string SendAuthorize(IServiceProvider provider, RestViewModal modal)
         {
-            
+            var packet = provider.GetService<IPacketsService>();
+            var dict = Request.Headers.ToDict();
+
         }
 
     }

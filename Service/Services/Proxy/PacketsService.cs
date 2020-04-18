@@ -11,5 +11,6 @@ namespace Service.Services.Proxy
         public PacketsService(IMongoContext context) : base(context)
         {
         }
+
     }
 }

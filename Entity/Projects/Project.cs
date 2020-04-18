@@ -4,6 +4,7 @@ using MongoDB.Bson.Serialization.Attributes;
 using RepositoryCore.Interfaces;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Entity.Projects
 {
@@ -20,6 +21,14 @@ namespace Entity.Projects
         public string Description { get; set; }
         public string AddUserId { get; set; }
         public string Password { get; set; }
+        [BsonIgnoreIfDefault()]
+        [BsonDefaultValue(true)]
+        public bool IsActive { get; set; } = true;
+        public ProjectServices GetService(Entity.Enum.Services service)
+        {
+           return ProjectService.FirstOrDefault(m => m.Services == service);
+            
+        }
 
     }
 }

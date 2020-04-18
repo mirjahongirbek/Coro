@@ -3,6 +3,7 @@ using MongoRepositorys.MongoContext;
 using MongoRepositorys.Repository;
 using Service.Interfaces;
 using System;
+using System.Collections.Generic;
 
 namespace Service.Services
 {
@@ -26,5 +27,9 @@ namespace Service.Services
             Add(model);
         }
 
+        public Project AddUnauthorizePartner(KeyValuePair<string, string>? pair)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

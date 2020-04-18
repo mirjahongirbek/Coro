@@ -1,6 +1,6 @@
 ﻿namespace Service.Commands
 {
-    public interface IConfigCommand
+    public interface IProxyCommand
     {
 
     }

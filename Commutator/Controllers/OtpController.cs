@@ -10,6 +10,7 @@ using System;
 using RepositoryCore.Models;
 using CoreResults;
 using System.Threading.Tasks;
+using Service.Interfaces.Message;
 
 namespace Commutator.Controllers
 {
@@ -17,17 +18,17 @@ namespace Commutator.Controllers
     [ApiController]
     public class OtpController : ControllerBase
     {
-        IEnumerable<IConfigCommand> _confList;
-        IPartnerService _partner;
+        IEnumerable<ISmsCommand> _confList;
+        IProjectService _project;
         IMessageService _message;
         public OtpController(
-            IEnumerable<IConfigCommand> confList,
-            IPartnerService partner,
+            IEnumerable<ISmsCommand> confList,
+            IProjectService project,
              IMessageService message
             )
         {
             _confList = confList;
-            _partner = partner;
+            _project = project;
             _message = message;
         }
         [HttpGet]
@@ -35,7 +36,7 @@ namespace Commutator.Controllers
         {
             try
             {
-                var partner = this.GetPartner(_partner, _message);
+                var partner = this.GetPartner(_project, _message);
                 var message = SendModal.Create(partner);
                 partner.RunConfig(_confList, message);
                 message.Messages.Add(new Message() { Recipient = RepositoryState.ParsePhone(phoneNumber) });
@@ -52,8 +53,9 @@ namespace Commutator.Controllers
         {
             try
             {
-                var partner = this.GetPartner(_partner, _message, model);
-                model.BeforeConfig(partner);
+                var partner = this.GetPartner(_project, _message, model);
+                
+                model.BeforeConfig(partner.GetService(Entity.Enum.Services.Sms));
                 partner.RunConfig(_confList, model);
                 _message.SendMessage(partner, model);
                 return this.GetResponse();
@@ -69,7 +71,7 @@ namespace Commutator.Controllers
         {
             try
             {
-                var partner = this.GetPartner(_partner, _message);
+                var partner = this.GetPartner(_project, _message);
                 _message.CheckOtp(partner, model);
                 return this.GetResponse();
             }

@@ -6,5 +6,7 @@ namespace Service.Interfaces.Proxy
 {
     public interface IPacketsService : IRepositoryCore<Packets, string>
     {
+        byte Request();    
     }
+
 }

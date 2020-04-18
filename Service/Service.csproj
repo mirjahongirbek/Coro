@@ -12,4 +12,9 @@
     <ProjectReference Include="..\Entity\Entity.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Commands\ConfigCommands\" />
+    <Folder Include="Commands\ProxyCommands\" />
+  </ItemGroup>
+
 </Project>

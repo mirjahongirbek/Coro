@@ -21,8 +21,10 @@ namespace Entity.Message
         public int OtpId { get; set; } 
         public DateTime CreateDate { get; set; }
         [BsonIgnoreIfDefault]
+        [BsonDefaultValue(true)]
         public bool IsSend { get; set; } = true;
-        public string PartnerId { get; set; }
+
+        public string ProjectId { get; set; }
     }
 
    
