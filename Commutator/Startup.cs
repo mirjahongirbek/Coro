@@ -1,7 +1,6 @@
 ﻿using AuthModel;
 using AuthModel.Interfaces;
 using Autofac;
-using Autofac.Core;
 using Autofac.Extensions.DependencyInjection;
 using Entity.Db;
 using Entity.Users;
@@ -14,7 +13,6 @@ using MongoAuthService.Services;
 using MongoRepositorys.MongoContext;
 using MongoRepositorys.Repository;
 using RepositoryCore.Interfaces;
-using Service.Interfaces;
 using System;
 
 namespace Commutator

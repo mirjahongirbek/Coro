@@ -8,4 +8,5 @@ namespace Entity.ViewModal
         public string Otp { get; set; }
         public string Token { get; set; }
     }
+   
 }

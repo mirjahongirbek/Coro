@@ -11,6 +11,7 @@ using RepositoryCore.Models;
 using CoreResults;
 using System.Threading.Tasks;
 using Service.Interfaces.Message;
+using Entity.ViewModal.Rest;
 
 namespace Commutator.Controllers
 {
@@ -40,7 +41,11 @@ namespace Commutator.Controllers
                 var message = SendModal.Create(partner);
                 partner.RunConfig(_confList, message);
                 message.Messages.Add(new Message() { Recipient = RepositoryState.ParsePhone(phoneNumber) });
-                _message.SendOtp(partner, message);
+                RestViewModal viewModal = new RestViewModal()
+                {
+                     Header= Request.Headers.ToDict()
+                };
+                _message.SendOtp(partner, message, viewModal);
                 return this.GetResponse();
             }
             catch (Exception ext)
@@ -57,7 +62,8 @@ namespace Commutator.Controllers
                 
                 model.BeforeConfig(partner.GetService(Entity.Enum.Services.Sms));
                 partner.RunConfig(_confList, model);
-                _message.SendMessage(partner, model);
+                RestViewModal restModal = new RestViewModal() {  Header= Request.Headers.ToDict()};
+                _message.SendMessage(partner, model, restModal);
                 return this.GetResponse();
             }
             catch (Exception ext)
@@ -72,7 +78,8 @@ namespace Commutator.Controllers
             try
             {
                 var partner = this.GetPartner(_project, _message);
-                _message.CheckOtp(partner, model);
+                RestViewModal viewModal = new RestViewModal() { Header = Request.Headers.ToDict() };
+                _message.CheckOtp(partner, model, viewModal);
                 return this.GetResponse();
             }
             catch (Exception ext)

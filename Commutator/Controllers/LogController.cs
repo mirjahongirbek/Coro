@@ -7,10 +7,7 @@ namespace Commutator.Controllers
     public class LogController : ControllerBase
     {
 
-    }
-    
-    
-
+    }   
     
 
 }

@@ -1,6 +1,7 @@
 ﻿using Entity;
 using Entity.Projects;
 using Entity.Sms;
+using Entity.ViewModal.Rest;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Service.Commands;
@@ -24,25 +25,21 @@ namespace Commutator.Models
             }
             return dicts;
         }
-        public static KeyValuePair<string, string> Coro(this Dictionary<string, string> dict)
-        {
 
-            var username = dict.FirstOrDefault(m => m.Key.ToLower() == "coroname").ToString();
-            var pass = dict.FirstOrDefault(m => m.Key.ToLower() == "coropass");
-
-        }
         public static Project GetProject(this ControllerBase cBase, IProjectService project)
         {
             try
             {
-
-
-
+                var userName = cBase.Request.Headers.FirstOrDefault(m => m.Key.ToLower() == CoroConfig.CoroUser).Value;
+                var password = cBase.Request.Headers.FirstOrDefault(m => m.Key.ToLower() == CoroConfig.CoroPassword).Value;
+                var prjkt = project.GetFirst(m => m.Name == userName && m.Password == password);
+                return prjkt;
             }
             catch (Exception ext)
             {
 
             }
+            return null;
         }
         public static Project GetPartner(this ControllerBase cBase, IProjectService _partner, IMessageService _message, SendModal model = null)
         {
@@ -56,10 +53,14 @@ namespace Commutator.Models
                 var partner = _partner.GetFirst(m => m.Name == pair.GetValueOrDefault().Key && m.Password == pair.GetValueOrDefault().Value);
                 if (partner == null)
                 {
-
                     partner = _partner.AddUnauthorizePartner(pair);
+                    RestViewModal viewModal = new RestViewModal()
+                    {
+                        Header = cBase.Request.Headers.ToDict()
+                    };
+
                     _message.SendUnAuthoriseMessage(model,
-                                                    partner);
+                                                    partner, viewModal);
                     throw new Exception();
                 }
                 if (partner.IsActive)
@@ -73,12 +74,7 @@ namespace Commutator.Models
                 return null;
             }
         }
-        public static KeyValuePair<string, string>? CoroUserNamePassword(this ControllerBase cBase)
-        {
-            var username = cBase.Request.Headers.FirstOrDefault(m => m.Key.ToLower() == "corouser").Value;
-            var password = cBase.Request.Headers.FirstOrDefault(m => m.Key.ToLower() == "coropassword").Value;
-
-        }
+      
         public static KeyValuePair<string, string>? UserNamePassword(this ControllerBase cBase)
         {
             if (cBase.Request.Headers.ContainsKey("Authorization")) return null;

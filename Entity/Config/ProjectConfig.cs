@@ -3,7 +3,7 @@ using RepositoryCore.Interfaces;
 using System;
 using System.Collections.Generic;
 
-namespace Entity.Config
+namespace Entity.Configs
 {
     public class ProjectConfig:IEntity<string>
     {

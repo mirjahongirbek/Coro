@@ -9,6 +9,6 @@ namespace Entity.ViewModal.Rest
         public string Url { get; set; }
         public Method Method { get; set; }
         public Dictionary<string, object> Data { get; set; }
-        public Dictionary<string, string> Header { get; set; }
+        public Dictionary<string, string> Header { get; set; } = new Dictionary<string, string>();
     }
 }

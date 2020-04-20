@@ -12,7 +12,7 @@ namespace Entity.Projects
         }
         public string Id { get; set; }
         public string Name { get; set; }
-        public List<ProjectServer> ProjectServers { get; set; }
+        public List<ProjectServer> ProjectServers { get; set; } = new List<ProjectServer>();
         public string Password { get; set; }
         [BsonIgnoreIfDefault()]
         [BsonDefaultValue(true)]
@@ -20,6 +20,8 @@ namespace Entity.Projects
         public string UserName { get; set; }
         public Entity.Enum.Services Services { get; set; }
         public List<Config> Configs { get; set; } = new List<Config>();
+        public List<ProjectServer> Request { get; set; } = new List<ProjectServer>();
 
     }
+    
 }

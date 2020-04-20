@@ -53,7 +53,7 @@ namespace OtpClient
         {
             var client = ClientData.BeforeSend(_client);
             var response = await ClientData.PostAsync(client, _client.BaseUrl() + "/api/CheckOtp", model);
-            return true''
+            return true;
         }
         public async Task<bool> CheckOtp(string phoneNumber, string otp, string token)
         {

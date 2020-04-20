@@ -21,7 +21,7 @@ namespace Commutator.Controllers
             {
                 var project = this.GetProject(_project);
                var service= project.GetService(Entity.Enum.Services.Config);
-                var ip = HttpContext.Connection.RemoteIpAddress.ToString()
+                var ip = HttpContext.Connection.RemoteIpAddress.ToString();
 
             }
             catch(Exception ext)

@@ -1,7 +1,7 @@
 ﻿
 using OtpClient.Modals;
 
-namespace OtpClient.Config
+namespace OtpClient.Configs
 {
     public class ConfigIndex
     {

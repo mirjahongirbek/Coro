@@ -17,6 +17,8 @@ namespace Entity.Projects
         [BsonIgnoreIfDefault]
         [BsonDefaultValue(false)]
         public bool IsDefault { get; set; }
+        public string Url { get; set; }
+
 
     }
     
