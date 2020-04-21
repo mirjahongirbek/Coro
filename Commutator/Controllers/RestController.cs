@@ -20,38 +20,51 @@ namespace Commutator.Controllers
         public RestController(IServiceProvider provider)
         {
             _provider = provider;
-
         }
 
         [HttpPost]
-        public Task<string> FromRequest([FromBody]RestViewModal modal)
+        public Task FromRequest([FromBody]RestViewModal modal)
         {
 
             var projectName = Request.Headers.FirstOrDefault(m => m.Key.ToLower() == "coroname").Value;
-
             if (string.IsNullOrEmpty(projectName))
             {
-                return Task.Factory.StartNew<string>(() => SendUnuthorize(_provider, modal));
+                return Task.Factory.StartNew(async () => await SendUnuthorize(_provider, modal));
             }
-            return Task.Factory.StartNew<string>(() => SendAuthorize(_provider, modal));
+            return Task.Factory.StartNew(async () => await SendAuthorize(_provider, modal));
         }
-        private string SendUnuthorize(IServiceProvider provider, RestViewModal modal)
+        private async Task SendUnuthorize(IServiceProvider provider, RestViewModal model)
         {
-            var packet = provider.GetService<IPacketsService>();
-            var dict = Request.Headers.ToDict();
-            packet.SendUnuthorize(modal, dict);
-            return "";
+            try
+            {
+                var ip = this.HttpContext.Connection.RemoteIpAddress.ToString();
+                model.FromIp = ip;
+                var packet = provider.GetService<IPacketsService>();
+                var dict = Request.Headers.ToDict();
+                model.Header = dict;
+                var item = await packet.SendUnuthorize(model);
+                this.ConvertRest(item);
+            }
+            catch (Exception ext)
+            {
+                Console.WriteLine(ext.Message);
+            }
         }
-        private string SendAuthorize(IServiceProvider provider, RestViewModal modal)
+        private async Task SendAuthorize(IServiceProvider provider, RestViewModal modal)
         {
             var packet = provider.GetService<IPacketsService>();
             var dict = Request.Headers.ToDict();
             var userPass = dict.Coro();
-            var _project = provider.GetService<IProjectService>();
-            var project = _project.GetFirst(m => m.Name == userPass.Key && m.Password == userPass.Value);
-            packet.SendAuthorize(modal, project);
-            return "";
+            if (userPass == null)
+            {
 
+            }
+            var coro = userPass.GetValueOrDefault();
+            var _project = provider.GetService<IProjectService>();
+            var project = _project.GetFirst(m => m.Name == coro.Key && m.Password == coro.Value);
+
+            var item = await packet.SendAuthorize(modal, project);
+            this.ConvertRest(item);
         }
 
     }

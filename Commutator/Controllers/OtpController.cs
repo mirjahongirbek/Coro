@@ -12,6 +12,7 @@ using CoreResults;
 using System.Threading.Tasks;
 using Service.Interfaces.Message;
 using Entity.ViewModal.Rest;
+using RestSharp;
 
 namespace Commutator.Controllers
 {
@@ -32,20 +33,36 @@ namespace Commutator.Controllers
             _project = project;
             _message = message;
         }
+        private RestViewModal DefaultRest
+        {
+            get
+            {
+                RestViewModal mdl = new RestViewModal()
+                {
+                    Services = Entity.Enum.Services.Sms,
+                    Header = Request.Headers.ToDict(),
+                    Url = Entity.CoroConfig.SmsUrl,
+                    Method = Entity.Enum.Method.Post
+
+                };
+                return mdl;
+            }
+        }
         [HttpGet]
         public async Task<ResponseData> SendOtp(string phoneNumber)
         {
             try
             {
-                var partner = this.GetPartner(_project, _message);
+
+                var partner = this.GetProject(_project, DefaultRest);
                 var message = SendModal.Create(partner);
                 partner.RunConfig(_confList, message);
                 message.Messages.Add(new Message() { Recipient = RepositoryState.ParsePhone(phoneNumber) });
                 RestViewModal viewModal = new RestViewModal()
                 {
-                     Header= Request.Headers.ToDict()
+                    Header = Request.Headers.ToDict()
                 };
-                _message.SendOtp(partner, message, viewModal);
+                await _message.SendOtp(partner, message, viewModal);
                 return this.GetResponse();
             }
             catch (Exception ext)
@@ -54,22 +71,26 @@ namespace Commutator.Controllers
             }
         }
 
-        public async Task<ResponseData> SendMessage([FromBody] SendModal model)
+        public async Task SendMessage([FromBody] SendModal model)
         {
             try
             {
-                var partner = this.GetPartner(_project, _message, model);
-                
-                model.BeforeConfig(partner.GetService(Entity.Enum.Services.Sms));
-                partner.RunConfig(_confList, model);
-                RestViewModal restModal = new RestViewModal() {  Header= Request.Headers.ToDict()};
-                _message.SendMessage(partner, model, restModal);
-                return this.GetResponse();
+                var rests = DefaultRest;
+                var project = this.GetProject(_project, rests);
+                IRestResponse rest = null;
+                if (!project.IsActive)
+                {
+                    rest = await _message.SendUnAuthoriseMessage(model, project, rests);
+                    this.ConvertRest(rest);
+                    return;
+                }
+                model.BeforeConfig(project.GetService(Entity.Enum.Services.Sms));
+                project.RunConfig(_confList, model);
+                rest = await _message.SendMessage(project, model, rests);                
             }
             catch (Exception ext)
             {
-                return this.GetResponse();
-
+                
             }
         }
 
@@ -77,10 +98,9 @@ namespace Commutator.Controllers
         {
             try
             {
-                var partner = this.GetPartner(_project, _message);
-                RestViewModal viewModal = new RestViewModal() { Header = Request.Headers.ToDict() };
-                _message.CheckOtp(partner, model, viewModal);
-                return this.GetResponse();
+                var project = this.GetProject(_project, DefaultRest);
+                await _message.CheckOtp(project, model, DefaultRest);
+                return this.GetResponse(true);
             }
             catch (Exception ext)
             {

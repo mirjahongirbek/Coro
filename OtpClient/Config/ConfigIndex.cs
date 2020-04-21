@@ -14,7 +14,7 @@ namespace OtpClient.Configs
         
         public ProjectConfig Config
         {
-
+            get; set;
         }
 
     }

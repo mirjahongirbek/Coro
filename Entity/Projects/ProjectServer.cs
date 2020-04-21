@@ -17,8 +17,12 @@ namespace Entity.Projects
         [BsonIgnoreIfDefault]
         [BsonDefaultValue(false)]
         public bool IsDefault { get; set; }
+        [BsonIgnoreIfDefault]
         public string Url { get; set; }
-
+        [BsonIgnoreIfDefault]
+        public string UserName { get; set; }
+        [BsonIgnoreIfDefault]
+        public string Password { get; set; }
 
     }
     

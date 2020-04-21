@@ -18,9 +18,13 @@
   <ItemGroup>
     <ProjectReference Include="..\..\..\RepositoryCore\AuthSolution\AuthModel\AuthModel.csproj" />
     <ProjectReference Include="..\..\..\RepositoryCore\AuthSolution\AuthService\AuthService.csproj" />
+    <ProjectReference Include="..\..\..\RepositoryCore\AuthSolution\MongoAuthService\MongoAuthService.csproj" />
     <ProjectReference Include="..\..\..\RepositoryCore\CoreResult\CoreResult\CoreResult.csproj" />
+    <ProjectReference Include="..\..\..\RepositoryCore\Mongodb\MongoRepository\MongoRepositorys.csproj" />
     <ProjectReference Include="..\Entity\Entity.csproj" />
+    <ProjectReference Include="..\SendRequest\SendRequest.csproj" />
     <ProjectReference Include="..\Service\Service.csproj" />
+    <ProjectReference Include="..\TelegramService\TelegramService.csproj" />
   </ItemGroup>
 
 </Project>

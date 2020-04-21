@@ -9,6 +9,8 @@ namespace Service.Commands
          
         public string Name => "sendtelegram";
 
+        public bool IsRun { get; set; }
+
         public async Task Run(Project partner, SendModal modal)
         {
             

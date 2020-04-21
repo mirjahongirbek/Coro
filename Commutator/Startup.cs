@@ -35,13 +35,16 @@ namespace Commutator
             services.AddHttpContextAccessor();
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
             AuthModalOption.CheckDeviceId = false;
-           // services.AddScoped<IUserService, MongoUserService<User,Role, UserRole>>();
             services.AddScoped<IRoleRepository<Role, string>, MongoRoleService<Role>>();
             services.AddScoped<IUserRoleRepository<User, Role, UserRole, string>, MongoUserRoleService<User, Role, UserRole>>();
 
             var builder = new ContainerBuilder();
             builder.Populate(services);
+            
             Service.Start.Builder(builder);
+            SendRequest.Start.Builder(builder);
+       
+
             builder.RegisterType<MongoContext>().As<IMongoContext>().WithParameter("connectionString", "mongodb://superAdmin:admin123@192.168.45.94:27017");
             builder.RegisterGeneric(typeof(MongoRepository<>)).As(typeof(IRepositoryCore<,>)).InstancePerDependency();
             Container = builder.Build();

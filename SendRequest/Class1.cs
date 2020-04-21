@@ -1,44 +1,99 @@
-﻿using RestSharp;
+﻿using Entity;
+using Entity.Configs;
+using Entity.Projects;
+using Entity.Sms;
+using Entity.ViewModal.Rest;
+using Newtonsoft.Json;
+using RestSharp;
 using System;
+using System.Collections.Generic;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace SendRequest
 {
-    public interface IRequestService
-    {
-        IRestResponse Send(string url, object obj = null, Method methd = Method.GET);
-    }
     public class RequestService : IRequestService
     {
-        public IRestResponse Send(string url, object obj = null, Method methd = Method.GET)
+        public async Task<IRestResponse> Send(string url, RestViewModal model = null)
         {
-            RestClient client = new RestClient(url);
-            client.Timeout = 20000;
-            RestRequest request = null;
-            if (methd == Method.GET || methd == Method.POST)
-            {
-               request= GetQuery(obj, methd) ;
-            }
-            else
-            {
-                request = PostRequest(obj, methd);
-            }
-           var result= client.Execute(request);
+            var client = CreateClient(url, model);
+            RestRequest request = CreateRequest(model);
+            var result = client.Execute(request);
             return result;
 
         }
-        public RestRequest GetQuery(object obj = null, Method methd = Method.GET)
+        public async Task<IRestResponse> Send(Config config, RestViewModal model)
         {
-            RestRequest request = new RestRequest(Method.GET);
-            return request;
+            var client = CreateClient(config.RequestUrl, model);
+            ParseClient(config,model, client);
+            var request = CreateRequest(model);
+            return client.Execute(request);
+        }
+        public async Task<IRestResponse> Send(RestViewModal model)
+        {
+            RestClient client = new RestClient(model.Url);
+            AddHeaders(client, model.Header);
+            var request = CreateRequest(model);
+            return client.Execute(request);
+        }
+        public async Task<IRestResponse> Send(ProjectServer server, RestViewModal model)
+        {
+            var client = CreateClient(server.Url, model);
+            ParseServer(server, model, client);
+            var request = CreateRequest(model);
+            return client.Execute(request);
 
         }
-        public RestRequest PostRequest(object obj = null, Method method = Method.POST)
+        public async Task<IRestResponse> Send(ProjectServer server, RestViewModal model, SendModal sms)
         {
-            RestRequest request = new RestRequest(method);
+            var client = CreateClient(server.Url, model);
+            ParseServer(server,  model, client);
+            RestRequest request = new RestRequest(Method.POST);
+            request.AddJsonBody(sms);
+            return client.Execute(request);
 
-            if (obj != null)
+        }
+        public void ParseServer(ProjectServer server, RestViewModal model, RestClient client)
+        {
+
+
+        }
+        public void ParseClient(Config config, RestViewModal model, RestClient client)
+        {
+
+        }
+        public void AddHeaders(RestClient client, Dictionary<string, string> headers)
+        {
+            foreach (var i in headers)
             {
-                request.AddJsonBody(obj);
+                client.AddDefaultHeader(i.Key, i.Value);
+            }
+        }
+        public RestClient CreateClient(string url, RestViewModal viewModal)
+        {
+            RestClient client = new RestClient(url);
+            client.Timeout = 20000;
+            AddHeaders(client, viewModal.Header);
+            return client;
+        }
+        public RestRequest CreateRequest(RestViewModal model)
+        {
+            RestSharp.Method method = Method.GET;
+            switch (model.Method)
+            {
+                case Entity.Enum.Method.Post: { method = Method.POST; } break;
+                case Entity.Enum.Method.Put: { method = Method.PUT; } break;
+                case Entity.Enum.Method.Delete: { method = Method.DELETE; } break;
+            }
+            RestRequest request = new RestRequest(method);
+            if (model.Data != null)
+            {
+               // request.AddJsonBody(model.Data);
+                var postData = JsonConvert.SerializeObject(model.Data);
+                byte[] data = Encoding.GetEncoding("UTF-8").GetBytes(postData);
+                request.AddHeader("cache-control", "no-cache");
+                request.AddParameter("application/json; charset=utf-8", data, ParameterType.RequestBody);
+                request.AddJsonBody(data);
             }
             return request;
         }

@@ -1,17 +1,18 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using Entity.Projects;
 using Entity.Proxy;
 using Entity.ViewModal.Rest;
 using RepositoryCore.Interfaces;
-
+using RestSharp;
 
 namespace Service.Interfaces.Proxy
 {
     public interface IPacketsService : IRepositoryCore<Packets, string>
     {
         byte Request();
-        void SendAuthorize(RestViewModal modal, Project project);
-        void SendUnuthorize(RestViewModal modal, Dictionary<string, string> dict);
+        Task<IRestResponse> SendAuthorize(RestViewModal modal, Project project);
+        Task<IRestResponse> SendUnuthorize(RestViewModal model);
     }
 
 }

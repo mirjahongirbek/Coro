@@ -7,6 +7,7 @@ namespace Entity.Sms
 {
     public class SendModal
     {
+        [JsonProperty("messages")]
         public List<Message> Messages { get; set; }
         public static SendModal Create(Project partner)
         {
@@ -34,6 +35,8 @@ namespace Entity.Sms
         public string Token { get; set; } = null;
         public string UserName { get; set; }
         public string Password { get; set; }
+
+        public string FromIp { get; set; }
         public void BeforeConfig(ProjectServices partner)
         {
             if(partner== null) { return; }

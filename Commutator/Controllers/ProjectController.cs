@@ -1,8 +1,11 @@
 ﻿using AuthService;
 using CoreResults;
 using Entity.Projects;
+using Entity.ViewModal.Project;
 using Microsoft.AspNetCore.Mvc;
 using Service.Interfaces;
+using Service.Interfaces.Config;
+using Service.Interfaces.Proxy;
 using System;
 using System.Threading.Tasks;
 
@@ -13,6 +16,9 @@ namespace Commutator.Controllers
     public class ProjectController : ControllerBase
     {
         IProjectService _project;
+        IPacketsService _packet;
+        IConfigService _config;
+
         public ProjectController(IProjectService project)
         {
             _project = project;
@@ -22,19 +28,61 @@ namespace Commutator.Controllers
         {
             try
             {
-             _project.AddNewProject(model, this.UserId<string>());
+                _project.AddNewProject(model, this.UserId<string>());
                 return model;
-            }catch(Exception ext)
+            }
+            catch (Exception ext)
             {
                 return ext;
             }
+        }
+
+
+        [HttpPost]
+        public async Task RestQuery([FromBody]RestQueryModal model)
+        {
+            try
+            {
+               var project= _project.Get(model.ProjectId);
+                
+
+            }catch(Exception ext)
+            {
+
+            }
 
         }
-        
-    }
-    
-    
+        [HttpPost]
+        public async Task OtpQuery([FromBody]RestQueryModal model)
+        {
+            try
+            {
 
-    
+            }
+            catch (Exception ext)
+            {
+
+            }
+        }
+        [HttpPost]
+        public async Task ConfiQuery([FromBody] RestQueryModal model)
+        {
+            try
+            {
+
+            }
+            catch (Exception ext)
+            {
+
+            }
+
+        }
+
+    }
+
+
+
+
+
 
 }

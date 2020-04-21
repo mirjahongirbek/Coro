@@ -29,6 +29,11 @@ namespace Entity.Projects
            return ProjectService.FirstOrDefault(m => m.Services == service);
             
         }
+        public List<ProjectServices> GetServices(Entity.Enum.Services service)
+        {
+            return ProjectService.Where(m => m.Services == service).ToList();
+        }
+
 
     }
 }

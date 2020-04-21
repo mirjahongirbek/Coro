@@ -11,6 +11,8 @@ namespace Service.Commands
     {
         public string Name => "changeusername";
 
+        public bool IsRun { get; set; }
+
         public async Task Run(Project project, SendModal modal)
         {
            var service= project.GetService(Entity.Enum.Services.Sms);

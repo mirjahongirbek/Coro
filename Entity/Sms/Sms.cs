@@ -1,8 +1,11 @@
-﻿namespace Entity.Sms
+﻿using Newtonsoft.Json;
+
+namespace Entity.Sms
 {
     public class Sms
     {
-        public string Orginator { get; set; }
+        [JsonProperty("originator")]
+        public string Originator { get; set; }
         public Content Content { get; set; }
     }
 }
