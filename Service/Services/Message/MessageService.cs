@@ -2,21 +2,22 @@
 using Entity.Projects;
 using Entity.Sms;
 using Entity.ViewModal;
+using Entity.ViewModal.Message;
+using Entity.ViewModal.Project;
+using Entity.ViewModal.Rest;
+using MongoDB.Driver;
 using MongoRepositorys.MongoContext;
 using MongoRepositorys.Repository;
-using PService = Entity.Projects.ProjectServices;
+using Newtonsoft.Json;
+using RestSharp;
+using SendRequest;
 using Service.Interfaces.Message;
 using System;
-using System.Linq;
-using SendRequest;
-using Entity.ViewModal.Rest;
-using Newtonsoft.Json;
 using System.Collections.Generic;
-using RestSharp;
+using System.Linq;
 using System.Threading.Tasks;
-using MongoDB.Driver;
+using PService = Entity.Projects.ProjectServices;
 using SaveM = Entity.Message.SaveMessage;
-using Entity.ViewModal.Message;
 
 namespace Service.Services
 {
@@ -27,7 +28,7 @@ namespace Service.Services
         {
             model.StopWatch.Stop();
             model.Duration = model.StopWatch.ElapsedMilliseconds;
-            
+
 
         }
         private void SaveOtp(SaveM model)
@@ -43,7 +44,7 @@ namespace Service.Services
     public partial class MessageService
     {
 
-        public async Task<IRestResponse> SendOtp(Project partner, SendModal model, RestViewModal rest)
+        public async Task<SendOtpModel> SendOtp(Project partner, SendModal model, RestViewModal rest)
         {
 
             var isSend = GetFirst(m => m.PhoneNumber == model.Messages[0].Recipient
@@ -51,28 +52,63 @@ namespace Service.Services
              m.ProjectId == partner.Id);
             if (isSend != null)
             {
-                return null;
+                SendOtpModel resss = new SendOtpModel()
+                {
+                    Otp = isSend.Otp
+                };
+                return resss;
             }
             var save = SaveM.Create(model);
             var otp = RepositoryCore.CoreState.RepositoryState.RandomInt();
+            if (model.Messages.Count >= 1)
+            {
+
+            }
             model.Messages[0].Sms.Content.Text = "Activate Code: " + otp;
-            save.Otp = otp;
-            save.PhoneNumber = model.Messages[0].Recipient;
-            save.Token = RepositoryCore.CoreState.RepositoryState.GenerateRandomString(12);
-            var item = JsonConvert.SerializeObject(model);
-            rest.Data = JsonConvert.DeserializeObject<Dictionary<string, object>>(item);
             var service = partner.GetService(Entity.Enum.Services.Sms);
             if (service == null)
             {
                 service = GetDefaultService();
             }
-            var result = await _request.Send(service.Request.FirstOrDefault(), rest);
+
+            save.Otp = otp;
+            save.PhoneNumber = model.Messages[0].Recipient;
+            save.Token = RepositoryCore.CoreState.RepositoryState.GenerateRandomString(12);
             save.ProjectId = partner.Id;
+            save.ServiceId = service.Id;
+
+            var item = JsonConvert.SerializeObject(model);
+            rest.Data = JsonConvert.DeserializeObject<Dictionary<string, object>>(item);
+            rest.Method = Entity.Enum.Method.Post;
+            var result = await _request.Send(service.Request.FirstOrDefault(), rest);
             Parse(save, result, partner);
             Add(save);
-            return result;
+            SendOtpModel modelResult = new SendOtpModel() { Otp = save.Otp };
+            return modelResult;
         }
 
+    }
+
+    //Rest
+    public partial class MessageService
+    {
+        public async Task<RestQueryResponse<SaveM>> GetRest(RestQueryModal model)
+        {
+            var query = Find(m => m.ProjectId == model.ProjectId && m.CreateDate >= model.From && model.End >= m.CreateDate);
+            if (!string.IsNullOrEmpty(model.ServiceId))
+            {
+                query = query.Where(m => m.ServiceId == model.ServiceId);
+            }
+
+            RestQueryResponse<SaveM> result = new RestQueryResponse<SaveM>()
+            {
+                Count = query.Count(),
+                List = query.Skip(model.Offset).Take(model.Limit).ToList(),
+                 
+            };
+            return result;
+
+        }
     }
     public partial class MessageService : MongoRepository<SaveMessage>, IMessageService
     {
@@ -85,11 +121,11 @@ namespace Service.Services
         }
         public async Task<CheckOtpModels> CheckOtp(Project partner, CheckOtpModal model, RestViewModal rest)
         {
-            var item = GetFirst(m => m.ProjectId == partner.Id && m.Otp == model.Otp && m.CreateDate>=DateTime.Now.AddMinutes(-4));
+            var item = GetFirst(m => m.ProjectId == partner.Id && m.Otp == model.Otp && m.CreateDate >= DateTime.Now.AddMinutes(-4));
             CheckOtpModels result = new CheckOtpModels();
             if (item != null)
             {
-               result.PhoneNumber=  item.SendModal.Messages[0].Recipient;
+                result.PhoneNumber = item.SendModal.Messages[0].Recipient;
                 result.IsCheck = true;
             }
             else
@@ -103,11 +139,10 @@ namespace Service.Services
             var message = SaveMessage.Create(model);
             var service = project.GetService(Entity.Enum.Services.Sms);
             ParseService(service, model);
-            if (model.SendOtp)
-            {
-                return await SendOtp(project, model, rest);
-            }
+            message.ProjectId = project.Id;
+            message.ServiceId = service.Id;
             var result = await Send(service.ProjectServers.FirstOrDefault(), model, rest);
+
             return result;
         }
 
@@ -129,10 +164,6 @@ namespace Service.Services
             if (service == null)
             {
                 service = GetDefaultService();
-            }
-            if (model.SendOtp)
-            {
-                return await SendOtp(partner, model, rest);
             }
             var result = await Send(service.Request.FirstOrDefault(), model, rest);
             return result;

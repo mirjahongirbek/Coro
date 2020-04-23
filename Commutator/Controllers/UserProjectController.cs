@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 
 namespace Commutator.Controllers
 {
+
     [ApiController]
     [Route("/api/[controller]/[action]")]
     public class UserProjectController : ControllerBase
@@ -26,6 +27,7 @@ namespace Commutator.Controllers
         [HttpGet]
         public async Task<NetResult<List<UserProjects>>> MyProjects()
         {
+            return _myProjects.FindAll().ToList();
             return _myProjects.Find(m => m.UserStatus == AuthModel.Enum.UserStatus.Active && m.UserId == this.UserId<string>()).ToList();
         }
         [HttpPost]
@@ -53,7 +55,6 @@ namespace Commutator.Controllers
             }
             return null;
         }
-
     }
 
 }

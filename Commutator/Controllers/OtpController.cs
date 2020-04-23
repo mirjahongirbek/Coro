@@ -49,7 +49,7 @@ namespace Commutator.Controllers
             }
         }
         [HttpGet]
-        public async Task<ResponseData> SendOtp(string phoneNumber)
+        public async Task<ResponseData> SendOtp(string phoneNumber, string orginator="3700")
         {
             try
             {
@@ -57,13 +57,13 @@ namespace Commutator.Controllers
                 var partner = this.GetProject(_project, DefaultRest);
                 var message = SendModal.Create(partner);
                 partner.RunConfig(_confList, message);
-                message.Messages.Add(new Message() { Recipient = RepositoryState.ParsePhone(phoneNumber) });
+                message.Messages.Add(new Message() { Recipient = RepositoryState.ParsePhone(phoneNumber), MessageId="123456",  Sms=new Sms() {  Originator=orginator, Content= new Entity.Sms.Content()} });
                 RestViewModal viewModal = new RestViewModal()
                 {
                     Header = Request.Headers.ToDict()
                 };
-                await _message.SendOtp(partner, message, viewModal);
-                return this.GetResponse();
+             var result=   await _message.SendOtp(partner, message, viewModal);
+                return this.GetResponse(result);
             }
             catch (Exception ext)
             {

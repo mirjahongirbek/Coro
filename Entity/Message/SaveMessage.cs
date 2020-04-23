@@ -27,6 +27,7 @@ namespace Entity.Message
         public bool IsSend { get; set; } = true;
         public string ProjectId { get; set; }
         public long Duration { get; set; }
+        public string ServiceId { get; set; }
         [BsonIgnore]
         public Stopwatch StopWatch { get; set; }
         public static SaveMessage Create(SendModal sendModal)
@@ -40,6 +41,6 @@ namespace Entity.Message
             return save;
         }
     }
-
+    //5e9d9a371ea71c56fc355291
 
 }

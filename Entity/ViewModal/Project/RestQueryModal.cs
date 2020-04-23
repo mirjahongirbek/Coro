@@ -11,5 +11,12 @@ namespace Entity.ViewModal.Project
         public DateTime From { get; set; }
         public DateTime End { get; set; }
         public int Limit { get; set; }
+        public int Offset { get; set; }
+    }
+    public class RestQueryResponse<T>
+    {
+        public int Count { get; set; }
+        public int Limit { get; set; }
+        public List<T> List { get; set; }
     }
 }

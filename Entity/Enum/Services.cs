@@ -5,6 +5,7 @@ namespace Entity.Enum
     {
         Sms,
         Rest,
-        Config
+        Config,
+        Project
     }
 }
