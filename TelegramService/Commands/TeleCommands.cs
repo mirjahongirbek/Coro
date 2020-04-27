@@ -7,7 +7,8 @@ namespace TelegramService.Commands
 {
     public interface ITeleCommands
     {
-        string Name { get;  }
+        string Name { get; }
+        void SetData<T>(T data);
         Task Run(TelegramUser tuser, Message message);
     }
 }

@@ -73,15 +73,18 @@ namespace Commutator.Controllers
         #endregion
         #region  Otp Query
         [HttpPost]
-        public async Task OtpQuery([FromBody]RestQueryModal model)
+        public async Task<NetResult<RestQueryResponse<SaveMessage>>> OtpQuery([FromBody]RestQueryModal model)
         {
             try
             {
-
+                //var project= _project.Get(model.ProjectId);
+                RestQueryResponse<SaveMessage> result = await _message.GetRest(model);
+                return result;
             }
             catch (Exception ext)
             {
-
+                return ext
+                    ;
             }
         }
         #endregion

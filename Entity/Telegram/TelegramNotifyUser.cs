@@ -15,7 +15,7 @@ namespace Entity.Telegram
     //    public long ChatId { get; set; }
     //   public List<NotifyProjects> NotifyProjects { get; set; }
     //}
-    public class TelegramUser:IEntity<string>
+    public class TelegramUser : IEntity<string>
     {
 
         [BsonId]
@@ -29,5 +29,12 @@ namespace Entity.Telegram
         public string PhoneNumber { get; set; }
 
 
+    }
+    public class InlineButton : IEntity<string>
+    {
+        [BsonId]
+        public string Id { get; set; }
+        public Dictionary<string, string> Langs { get; set; }
+        public string CommandName { get; set; }
     }
 }

@@ -9,7 +9,7 @@ namespace OtpClient.Configs
         public ConfigIndex(ClientData clientData)
         {
             _client = clientData;
-
+            ClientData.AddConfig(null);
         }
         
         public ProjectConfig Config

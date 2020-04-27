@@ -38,9 +38,13 @@ namespace OtpClient
             }
 
         }
-        public ProjectConfig Config
+        internal  static void AddConfig(ProjectConfig config)
         {
-            get; set;
+            Config = config;
+        }
+        public static ProjectConfig Config
+        {
+            get; private set;
         }
         public string BaseUrl()
         {
@@ -94,4 +98,5 @@ namespace OtpClient
         }
         #endregion
     }
+    
 }
